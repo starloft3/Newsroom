@@ -16,6 +16,6 @@ int APIENTRY _tWinMain(HINSTANCE hInstance,
     AppDelegate app;
     CCEGLView* eglView = CCEGLView::sharedOpenGLView();
     eglView->setViewName("Newsroom");
-    eglView->setFrameSize(480, 320);
+    eglView->setFrameSize(375, 667);                   // iphone 6 logical resolution
     return CCApplication::sharedApplication()->run();
 }
