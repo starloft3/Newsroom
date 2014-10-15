@@ -1,3 +1,4 @@
+#include "DocumentContainer.h"
 #include "Newsroom.h"
 
 USING_NS_CC;
@@ -24,10 +25,12 @@ CCScene* Newsroom::scene()
 }
 
 //
-void Newsroom::reset()
+Newsroom::~Newsroom()
 {
-	mDocumentSprite = NULL;
-	mIsDraggingDocument = false;
+	if ( mDocumentContainer != NULL )
+	{
+		delete mDocumentContainer;
+	}
 }
 
 // on "init" you need to initialize your instance
@@ -40,7 +43,7 @@ bool Newsroom::init()
         return false;
     }
 
-	reset();
+	mDocumentContainer = new DocumentContainer();
     
     CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
     CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
@@ -53,9 +56,10 @@ bool Newsroom::init()
 	this->addChild(pSprite, BACKGROUND);
 
 	// add Document
-	mDocumentSprite = CCSprite::create("DocumentTemplate.jpg");
-	this->addChild(mDocumentSprite, GAME_LAYER);
-	warpDocumentToSpawnPoint();
+	CCSprite* documentSprite = CCSprite::create("DocumentTemplate.jpg");
+	this->addChild(documentSprite, GAME_LAYER);
+	mDocumentContainer->SetSprite(documentSprite);
+	mDocumentContainer->WarpToSpawnPoint();
 
 	/////////////////////////////
 
@@ -65,41 +69,34 @@ bool Newsroom::init()
     return true;
 }
 
-void Newsroom::warpDocumentToSpawnPoint()
-{
-	if ( mDocumentSprite != NULL )
-	{
-		CCSize visibleSize = CCDirector::sharedDirector()->getVisibleSize();
-		CCPoint origin = CCDirector::sharedDirector()->getVisibleOrigin();
-		mDocumentSprite->setPosition(ccp(visibleSize.width/2 + origin.x, visibleSize.height/2 + origin.y));
-	}
-}
-
+//
 void Newsroom::ccTouchesBegan(CCSet *pTouches, CCEvent *pEvent)
 {
     CCSetIterator it = pTouches->begin();
     CCTouch* touch = (CCTouch*)(*it);
     CCPoint location = touch->getLocation();
-    if(mDocumentSprite->boundingBox().containsPoint(location))
+    if(mDocumentContainer->GetSprite()->boundingBox().containsPoint(location))
     {
-        mIsDraggingDocument = true;
-		mDocumentSprite->setPosition(ccp(location.x, location.y));
+        mDocumentContainer->SetIsBeingDragged(true);
+		mDocumentContainer->GetSprite()->setPosition(ccp(location.x, location.y));
     }
 }
 
+//
 void Newsroom::ccTouchesMoved(CCSet *pTouches, CCEvent *pEvent)
 {
-    if (mIsDraggingDocument)
+    if (mDocumentContainer->GetIsBeingDragged())
     {
 		CCSetIterator it = pTouches->begin();
 		CCTouch* touch = (CCTouch*)(*it);
 		CCPoint location = touch->getLocation();
-		mDocumentSprite->setPosition(ccp(location.x, location.y));
+		mDocumentContainer->GetSprite()->setPosition(ccp(location.x, location.y));
     }
 }
 
+//
 void Newsroom::ccTouchesEnded(CCSet *pTouches, CCEvent *pEvent)
 {
-	mIsDraggingDocument = false;
-	warpDocumentToSpawnPoint();
+    mDocumentContainer->SetIsBeingDragged(false);
+	mDocumentContainer->WarpToSpawnPoint();
 }
