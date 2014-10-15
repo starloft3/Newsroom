@@ -19,6 +19,8 @@ public:
 	// implement the "static node()" method manually
     CREATE_FUNC(Newsroom);
 
+	virtual void update(float dt);
+
 	virtual void ccTouchesBegan(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 	virtual void ccTouchesMoved(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
 	virtual void ccTouchesEnded(cocos2d::CCSet *pTouches, cocos2d::CCEvent *pEvent);
